@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
         COUNT(DISTINCT l.id) as likeCount,
         COUNT(DISTINCT CASE WHEN l.userId = ? THEN 1 END) as isLiked
       FROM post p
-      JOIN user u ON p.userId = u.id
+      JOIN `user` u ON p.userId = u.id
       LEFT JOIN \`like\` l ON p.id = l.postId
       GROUP BY p.id, u.id, u.name, u.username, u.image, p.content, p.imageUrl, p.createdAt, p.updatedAt
       ORDER BY p.createdAt DESC
@@ -45,7 +45,7 @@ router.get('/user/:userId', async (req, res) => {
         COUNT(DISTINCT l.id) as likeCount,
         COUNT(DISTINCT CASE WHEN l.userId = ? THEN 1 END) as isLiked
       FROM post p
-      JOIN user u ON p.userId = u.id
+      JOIN `user` u ON p.userId = u.id
       LEFT JOIN \`like\` l ON p.id = l.postId
       WHERE p.userId = ?
       GROUP BY p.id, u.id, u.name, u.username, u.image, p.content, p.imageUrl, p.createdAt, p.updatedAt
@@ -73,7 +73,7 @@ router.get('/:postId', async (req, res) => {
         COUNT(DISTINCT l.id) as likeCount,
         COUNT(DISTINCT CASE WHEN l.userId = ? THEN 1 END) as isLiked
       FROM post p
-      JOIN user u ON p.userId = u.id
+      JOIN `user` u ON p.userId = u.id
       LEFT JOIN \`like\` l ON p.id = l.postId
       WHERE p.id = ?
       GROUP BY p.id, u.id, u.name, u.username, u.image, p.content, p.imageUrl, p.createdAt, p.updatedAt
@@ -115,7 +115,7 @@ router.post('/', async (req, res) => {
         0 as likeCount,
         0 as isLiked
       FROM post p
-      JOIN user u ON p.userId = u.id
+      JOIN `user` u ON p.userId = u.id
       WHERE p.id = ?
     `, [postId]);
 

@@ -8,7 +8,7 @@ router.get('/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
     const [users] = await pool.execute(
-      'SELECT id, name, email, image, bio, username, createdAt FROM user WHERE id = ?',
+      'SELECT id, name, email, image, bio, username, createdAt FROM `user` WHERE id = ?',
       [userId]
     );
 
@@ -50,7 +50,7 @@ router.get('/search/:query', async (req, res) => {
   try {
     const { query } = req.params;
     const [users] = await pool.execute(
-      `SELECT id, name, username, image FROM user 
+      `SELECT id, name, username, image FROM \`user\` 
        WHERE name LIKE ? OR username LIKE ? 
        LIMIT 20`,
       [`%${query}%`, `%${query}%`]
@@ -75,12 +75,12 @@ router.put('/:userId', async (req, res) => {
     }
 
     await pool.execute(
-      'UPDATE user SET name = ?, bio = ?, username = ?, image = ? WHERE id = ?',
+      'UPDATE `user` SET name = ?, bio = ?, username = ?, image = ? WHERE id = ?',
       [name, bio, username, image, userId]
     );
 
     const [users] = await pool.execute(
-      'SELECT id, name, email, image, bio, username, createdAt FROM user WHERE id = ?',
+      'SELECT id, name, email, image, bio, username, createdAt FROM `user` WHERE id = ?',
       [userId]
     );
 
