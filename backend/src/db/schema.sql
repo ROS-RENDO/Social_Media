@@ -94,3 +94,73 @@ CREATE TABLE IF NOT EXISTS `like` (
   INDEX idx_userId (userId),
   INDEX idx_postId (postId)
 );
+
+-- Comments table
+CREATE TABLE IF NOT EXISTS comment (
+  id VARCHAR(255) PRIMARY KEY,
+  postId VARCHAR(255) NOT NULL,
+  userId VARCHAR(255) NOT NULL,
+  content TEXT NOT NULL,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (postId) REFERENCES post(id) ON DELETE CASCADE,
+  FOREIGN KEY (userId) REFERENCES `user`(id) ON DELETE CASCADE,
+  INDEX idx_postId (postId),
+  INDEX idx_userId (userId),
+  INDEX idx_createdAt (createdAt DESC)
+);
+
+-- Messages table
+CREATE TABLE IF NOT EXISTS message (
+  id VARCHAR(255) PRIMARY KEY,
+  senderId VARCHAR(255) NOT NULL,
+  recipientId VARCHAR(255) NOT NULL,
+  content TEXT NOT NULL,
+  isRead BOOLEAN DEFAULT FALSE,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (senderId) REFERENCES `user`(id) ON DELETE CASCADE,
+  FOREIGN KEY (recipientId) REFERENCES `user`(id) ON DELETE CASCADE,
+  INDEX idx_senderId (senderId),
+  INDEX idx_recipientId (recipientId),
+  INDEX idx_createdAt (createdAt DESC)
+);
+
+-- Notifications table
+CREATE TABLE IF NOT EXISTS notification (
+  id VARCHAR(255) PRIMARY KEY,
+  userId VARCHAR(255) NOT NULL,
+  type VARCHAR(50) NOT NULL,
+  triggeredBy VARCHAR(255) NOT NULL,
+  postId VARCHAR(255),
+  isRead BOOLEAN DEFAULT FALSE,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (userId) REFERENCES `user`(id) ON DELETE CASCADE,
+  FOREIGN KEY (triggeredBy) REFERENCES `user`(id) ON DELETE CASCADE,
+  FOREIGN KEY (postId) REFERENCES post(id) ON DELETE CASCADE,
+  INDEX idx_userId (userId),
+  INDEX idx_triggeredBy (triggeredBy),
+  INDEX idx_createdAt (createdAt DESC)
+);
+
+-- Hashtags table
+CREATE TABLE IF NOT EXISTS hashtag (
+  id VARCHAR(255) PRIMARY KEY,
+  tag VARCHAR(255) UNIQUE NOT NULL,
+  postCount INT DEFAULT 0,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_tag (tag)
+);
+
+-- Post Hashtags junction table
+CREATE TABLE IF NOT EXISTS postHashtag (
+  postId VARCHAR(255) NOT NULL,
+  hashtagId VARCHAR(255) NOT NULL,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (postId, hashtagId),
+  FOREIGN KEY (postId) REFERENCES post(id) ON DELETE CASCADE,
+  FOREIGN KEY (hashtagId) REFERENCES hashtag(id) ON DELETE CASCADE,
+  INDEX idx_hashtagId (hashtagId)
+);

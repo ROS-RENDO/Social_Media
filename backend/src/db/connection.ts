@@ -26,9 +26,9 @@ if (process.env.DATABASE_URL) {
   poolConfig = {
     ...poolConfig,
     host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'social_media',
+    user: process.env.MYSQL_USER || 'root',
+    password: process.env.MYSQL_PASSWORD || '',
+    database: process.env.MYSQL_DATABASE || 'social_media',
   };
 }
 
