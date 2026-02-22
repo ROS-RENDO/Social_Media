@@ -92,7 +92,7 @@ router.get('/:userId/followers', async (req, res) => {
     const [followers] = await pool.execute(`
       SELECT u.id, u.name, u.username, u.image
       FROM follow f
-      JOIN `user` u ON f.followerId = u.id
+      JOIN \`user\` u ON f.followerId = u.id
       WHERE f.followingId = ?
       ORDER BY f.createdAt DESC
     `, [userId]);
@@ -111,7 +111,7 @@ router.get('/:userId/following', async (req, res) => {
     const [following] = await pool.execute(`
       SELECT u.id, u.name, u.username, u.image
       FROM follow f
-      JOIN `user` u ON f.followingId = u.id
+      JOIN \`user\` u ON f.followingId = u.id
       WHERE f.followerId = ?
       ORDER BY f.createdAt DESC
     `, [userId]);

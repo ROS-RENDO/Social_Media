@@ -1,0 +1,211 @@
+// Social Media MVP - Database Schema (DBML)
+// Better Auth tables + custom app tables
+
+Table user {
+  id varchar(255) [pk, note: 'Primary key, UUID']
+  name varchar(255) [not null]
+  email varchar(255) [not null, unique]
+  emailVerified boolean [default: false]
+  image varchar(500)
+  createdAt datetime [default: `CURRENT_TIMESTAMP`]
+  updatedAt datetime [default: `CURRENT_TIMESTAMP`]
+  bio text
+  username varchar(50) [unique]
+  
+  indexes {
+    email
+    username
+  }
+  
+  note: 'User accounts (Better Auth + custom fields)'
+}
+
+Table session {
+  id varchar(255) [pk]
+  userId varchar(255) [not null, ref: > user.id]
+  expiresAt datetime [not null]
+  token varchar(255) [not null, unique]
+  ipAddress varchar(45)
+  userAgent text
+  createdAt datetime [default: `CURRENT_TIMESTAMP`]
+  updatedAt datetime [default: `CURRENT_TIMESTAMP`]
+  
+  indexes {
+    userId
+    token
+  }
+  
+  note: 'Better Auth - user sessions'
+}
+
+Table account {
+  id varchar(255) [pk]
+  userId varchar(255) [not null, ref: > user.id]
+  accountId varchar(255) [not null]
+  providerId varchar(255) [not null]
+  accessToken text
+  refreshToken text
+  expiresAt datetime
+  password varchar(255)
+  createdAt datetime [default: `CURRENT_TIMESTAMP`]
+  updatedAt datetime [default: `CURRENT_TIMESTAMP`]
+  
+  indexes {
+    userId
+    (providerId, accountId)
+  }
+  
+  note: 'Better Auth - OAuth / credential accounts'
+}
+
+Table verification {
+  id varchar(255) [pk]
+  identifier varchar(255) [not null]
+  value varchar(255) [not null]
+  expiresAt datetime [not null]
+  createdAt datetime [default: `CURRENT_TIMESTAMP`]
+  
+  indexes {
+    identifier
+    value
+  }
+  
+  note: 'Better Auth - email verification tokens'
+}
+
+Table post {
+  id varchar(255) [pk]
+  userId varchar(255) [not null, ref: > user.id]
+  content text [not null]
+  imageUrl varchar(500)
+  createdAt datetime [default: `CURRENT_TIMESTAMP`]
+  updatedAt datetime [default: `CURRENT_TIMESTAMP`]
+  
+  indexes {
+    userId
+    createdAt
+  }
+  
+  note: 'User posts'
+}
+
+Table follow {
+  id varchar(255) [pk]
+  followerId varchar(255) [not null, ref: > user.id]
+  followingId varchar(255) [not null, ref: > user.id]
+  createdAt datetime [default: `CURRENT_TIMESTAMP`]
+  
+  indexes {
+    followerId
+    followingId
+  }
+  
+  note: 'User follow relationships (followerId follows followingId)'
+}
+
+Table like {
+  id varchar(255) [pk]
+  userId varchar(255) [not null, ref: > user.id]
+  postId varchar(255) [not null, ref: > post.id]
+  createdAt datetime [default: `CURRENT_TIMESTAMP`]
+  
+  indexes {
+    userId
+    postId
+  }
+  
+  note: 'Post likes'
+}
+
+Table comment {
+  id varchar(255) [pk]
+  postId varchar(255) [not null, ref: > post.id]
+  userId varchar(255) [not null, ref: > user.id]
+  content text [not null]
+  createdAt datetime [default: `CURRENT_TIMESTAMP`]
+  updatedAt datetime [default: `CURRENT_TIMESTAMP`]
+  
+  indexes {
+    postId
+    userId
+    createdAt
+  }
+  
+  note: 'Post comments'
+}
+
+Table message {
+  id varchar(255) [pk]
+  senderId varchar(255) [not null, ref: > user.id]
+  recipientId varchar(255) [not null, ref: > user.id]
+  content text [not null]
+  isRead boolean [default: false]
+  createdAt datetime [default: `CURRENT_TIMESTAMP`]
+  
+  indexes {
+    senderId
+    recipientId
+    isRead
+  }
+  
+  note: 'Direct messages between users'
+}
+
+Table notification {
+  id varchar(255) [pk]
+  userId varchar(255) [not null, ref: > user.id]
+  type varchar(50) [not null, note: 'like, comment, follow, message']
+  triggeredBy varchar(255) [not null, ref: > user.id]
+  postId varchar(255) [ref: > post.id]
+  isRead boolean [default: false]
+  createdAt datetime [default: `CURRENT_TIMESTAMP`]
+  
+  indexes {
+    userId
+    isRead
+    createdAt
+  }
+  
+  note: 'User notifications'
+}
+
+Table block {
+  id varchar(255) [pk]
+  blockerId varchar(255) [not null, ref: > user.id]
+  blockedId varchar(255) [not null, ref: > user.id]
+  createdAt datetime [default: `CURRENT_TIMESTAMP`]
+  
+  indexes {
+    blockerId
+    blockedId
+  }
+  
+  note: 'Blocked users'
+}
+
+Table hashtag {
+  id varchar(255) [pk]
+  tag varchar(100) [not null, unique]
+  postCount int [default: 0]
+  createdAt datetime [default: `CURRENT_TIMESTAMP`]
+  
+  indexes {
+    tag
+  }
+  
+  note: 'Trending hashtags'
+}
+
+Table postHashtag {
+  id varchar(255) [pk]
+  postId varchar(255) [not null, ref: > post.id]
+  hashtagId varchar(255) [not null, ref: > hashtag.id]
+  createdAt datetime [default: `CURRENT_TIMESTAMP`]
+  
+  indexes {
+    postId
+    hashtagId
+  }
+  
+  note: 'Post-hashtag relationships'
+}
