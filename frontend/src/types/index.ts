@@ -10,6 +10,9 @@ export interface User {
   image?: string;
   bio?: string;
   createdAt?: string;
+  followerCount?: number;
+  followingCount?: number;
+  postCount?: number;
 }
 
 export interface Post {
@@ -17,13 +20,14 @@ export interface Post {
   content: string;
   imageUrl?: string;
   createdAt: string;
+  updatedAt?: string;
   userId: string;
   userName: string;
   username?: string;
   userImage?: string;
   likeCount: number;
   commentCount?: number;
-  isLiked: number;
+  isLiked: number | boolean;
   isLikedByUser?: boolean;
 }
 

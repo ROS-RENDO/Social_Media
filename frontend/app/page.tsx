@@ -4,11 +4,11 @@ import { useEffect } from "react";
 import CreatePost from "@/components/CreatePost";
 import PostCard from "@/components/PostCard";
 import { useProtectedRoute, usePosts } from "@/hooks";
-import type { Post } from "@/types";
+import type { Post } from "@/types/index";
 
 export default function Home() {
   const { session, isPending, isAuthenticated } = useProtectedRoute();
-  const { posts, isLoading, fetchPosts } = usePosts(session?.user?.id);
+  const { posts, isLoading, fetchPosts } = usePosts();
 
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
@@ -41,7 +41,7 @@ export default function Home() {
             No posts yet. Be the first to post!
           </div>
         ) : (
-          posts.map((post) => (
+          posts.map((post: Post) => (
             <PostCard
               key={post.id}
               post={post}

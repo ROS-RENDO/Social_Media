@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { notifications as notificationsAPI } from "@/lib/apiClient";
 import Link from "next/link";
+import Image from "next/image";
 
 interface Notification {
   id: string;
@@ -94,10 +95,12 @@ export default function NotificationsPage() {
                   className="flex items-center gap-3 flex-1"
                 >
                   {notification.image && (
-                    <img
+                    <Image
                       src={notification.image}
                       alt={notification.name}
-                      className="w-12 h-12 rounded-full"
+                      width={48}
+                      height={48}
+                      className="rounded-full"
                     />
                   )}
                   <div className="flex-1">
@@ -106,7 +109,7 @@ export default function NotificationsPage() {
                     </p>
                     {notification.postContent && (
                       <p className="text-sm text-gray-600 truncate">
-                        "{notification.postContent}"
+                        &quot;{notification.postContent}&quot;
                       </p>
                     )}
                     <p className="text-xs text-gray-500">

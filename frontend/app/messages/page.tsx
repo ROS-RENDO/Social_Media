@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { messages as messagesAPI } from "@/lib/apiClient";
 import Link from "next/link";
+import Image from "next/image";
 
 interface Conversation {
   otherUserId: string;
@@ -53,10 +54,12 @@ export default function MessagesPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {conversation.image && (
-                    <img
+                    <Image
                       src={conversation.image}
                       alt={conversation.name}
-                      className="w-10 h-10 rounded-full"
+                      width={40}
+                      height={40}
+                      className="rounded-full"
                     />
                   )}
                   <div>

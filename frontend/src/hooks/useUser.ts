@@ -5,8 +5,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { api } from "@/lib/api";
-import { User } from "@/types";
+import { users as usersAPI, follows as followsAPI } from "@/lib/apiClient";
+import { User, Follow } from "@/types/index";
 
 export const useUser = (userId?: string) => {
   const [user, setUser] = useState<User | null>(null);
@@ -18,8 +18,8 @@ export const useUser = (userId?: string) => {
     try {
       setIsLoading(true);
       setError(null);
-      const data = await api.getUser(userId);
-      setUser(data);
+      const response = await usersAPI.getProfile(userId);
+      setUser(response.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load user");
       console.error("Error loading user:", err);
@@ -33,11 +33,8 @@ export const useUser = (userId?: string) => {
       if (!userId) return false;
       try {
         setError(null);
-        await api.updateUser(userId, {
-          ...updates,
-          currentUserId: userId,
-        });
-        setUser((prev) => (prev ? { ...prev, ...updates } : null));
+        const response = await usersAPI.updateProfile(updates);
+        setUser(response.data);
         return true;
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to update user");
@@ -66,13 +63,16 @@ export const useFollow = (userId?: string) => {
   const [error, setError] = useState<string | null>(null);
 
   const checkFollowStatus = useCallback(
-    async (followerId: string) => {
+    async (targetUserId: string) => {
       if (!userId) return;
       try {
         setIsLoading(true);
         setError(null);
-        const status = await api.checkFollowStatus(userId, followerId);
-        setIsFollowing(status);
+        const response = await followsAPI.getFollowing(userId, 1);
+        const isFollowing = response.data.some(
+          (follow: Follow) => follow.followingId === targetUserId,
+        );
+        setIsFollowing(isFollowing);
       } catch (err) {
         console.error("Error checking follow status:", err);
       } finally {
@@ -83,11 +83,11 @@ export const useFollow = (userId?: string) => {
   );
 
   const follow = useCallback(
-    async (followerId: string) => {
+    async (targetUserId: string) => {
       if (!userId) return false;
       try {
         setError(null);
-        await api.followUser(userId, followerId);
+        await followsAPI.follow(targetUserId);
         setIsFollowing(true);
         return true;
       } catch (err) {
@@ -100,11 +100,11 @@ export const useFollow = (userId?: string) => {
   );
 
   const unfollow = useCallback(
-    async (followerId: string) => {
+    async (followId: string) => {
       if (!userId) return false;
       try {
         setError(null);
-        await api.unfollowUser(userId, followerId);
+        await followsAPI.unfollow(followId);
         setIsFollowing(false);
         return true;
       } catch (err) {
@@ -144,8 +144,8 @@ export const useSearchUsers = () => {
     try {
       setIsLoading(true);
       setError(null);
-      const data = await api.searchUsers(query);
-      setResults(data);
+      const response = await usersAPI.searchUsers(query);
+      setResults(response.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Search failed");
       console.error("Error searching users:", err);

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { discover } from "@/lib/apiClient";
 import Link from "next/link";
+import Image from "next/image";
 
 interface ExplorePost {
   id: string;
@@ -93,10 +94,12 @@ export default function ExplorePage() {
             >
               <div className="flex items-center gap-3 mb-2">
                 {post.image && (
-                  <img
+                  <Image
                     src={post.image}
                     alt={post.name}
-                    className="w-10 h-10 rounded-full"
+                    width={40}
+                    height={40}
+                    className="rounded-full"
                   />
                 )}
                 <div>
@@ -106,10 +109,12 @@ export default function ExplorePage() {
               </div>
               <p className="mb-2">{post.content}</p>
               {post.imageUrl && (
-                <img
+                <Image
                   src={post.imageUrl}
                   alt="Post"
-                  className="w-full rounded-lg mb-2 max-h-96 object-cover"
+                  width={600}
+                  height={400}
+                  className="rounded-lg mb-2 object-cover"
                 />
               )}
               <div className="flex gap-4 text-gray-600 text-sm">
@@ -128,10 +133,12 @@ export default function ExplorePage() {
               className="p-4 border rounded-lg hover:bg-gray-50 transition text-center"
             >
               {user.image && (
-                <img
+                <Image
                   src={user.image}
                   alt={user.name}
-                  className="w-16 h-16 rounded-full mx-auto mb-2"
+                  width={64}
+                  height={64}
+                  className="rounded-full mx-auto mb-2"
                 />
               )}
               <div className="font-semibold">{user.name}</div>

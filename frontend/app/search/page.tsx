@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { search } from "@/lib/apiClient";
 import Link from "next/link";
 
@@ -86,10 +87,12 @@ export default function SearchPage() {
                     className="p-4 border rounded-lg hover:bg-gray-50 transition flex items-center gap-3"
                   >
                     {user.image && (
-                      <img
+                      <Image
                         src={user.image}
                         alt={user.name}
-                        className="w-12 h-12 rounded-full"
+                        width={48}
+                        height={48}
+                        className="rounded-full"
                       />
                     )}
                     <div>
@@ -119,10 +122,12 @@ export default function SearchPage() {
                   >
                     <div className="flex items-center gap-3 mb-2">
                       {post.image && (
-                        <img
+                        <Image
                           src={post.image}
                           alt={post.name}
-                          className="w-10 h-10 rounded-full"
+                          width={40}
+                          height={40}
+                          className="rounded-full"
                         />
                       )}
                       <div>
@@ -134,10 +139,12 @@ export default function SearchPage() {
                     </div>
                     <p className="mb-2">{post.content}</p>
                     {post.imageUrl && (
-                      <img
+                      <Image
                         src={post.imageUrl}
                         alt="Post"
-                        className="w-full rounded-lg mb-2 max-h-96 object-cover"
+                        width={600}
+                        height={400}
+                        className="rounded-lg mb-2 object-cover"
                       />
                     )}
                     <div className="flex gap-4 text-gray-600 text-sm">

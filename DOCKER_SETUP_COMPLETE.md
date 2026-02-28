@@ -17,7 +17,8 @@ Your social media app now has complete Docker support for both **development** a
 | `nginx.conf`                | Reverse proxy configuration (production)        |
 | `.env.example`              | Environment variables template                  |
 | `start-docker.sh`           | Automated startup script (Linux/Mac)            |
-| `start-docker.bat`          | Automated startup script (Windows)              |
+| `start-docker.ba
+t`          | Automated startup script (Windows)              |
 | `DOCKER_GUIDE.md`           | Comprehensive Docker documentation              |
 | `DOCKER_TROUBLESHOOTING.md` | Common issues & solutions                       |
 

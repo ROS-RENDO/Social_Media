@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { api } from '@/lib/api';
+import { useState, useEffect } from "react";
+import { follows as followsAPI } from "@/lib/apiClient";
 
 interface FollowButtonProps {
   userId: string;
@@ -9,7 +9,11 @@ interface FollowButtonProps {
   onUpdate?: () => void;
 }
 
-export default function FollowButton({ userId, currentUserId, onUpdate }: FollowButtonProps) {
+export default function FollowButton({
+  userId,
+  currentUserId,
+  onUpdate,
+}: FollowButtonProps) {
   const [isFollowing, setIsFollowing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
@@ -20,9 +24,13 @@ export default function FollowButton({ userId, currentUserId, onUpdate }: Follow
       return;
     }
 
-    api.checkFollowStatus(userId, currentUserId)
-      .then((data: { isFollowing: boolean }) => {
-        setIsFollowing(data.isFollowing);
+    followsAPI
+      .getFollowing(userId, 1)
+      .then((response) => {
+        const isFollowing = response.data.some(
+          (follow: any) => follow.followingId === currentUserId,
+        );
+        setIsFollowing(isFollowing);
       })
       .catch(console.error)
       .finally(() => setIsChecking(false));
@@ -32,15 +40,15 @@ export default function FollowButton({ userId, currentUserId, onUpdate }: Follow
     setIsLoading(true);
     try {
       if (isFollowing) {
-        await api.unfollowUser(userId, currentUserId);
+        await followsAPI.unfollow(userId);
         setIsFollowing(false);
       } else {
-        await api.followUser(userId, currentUserId);
+        await followsAPI.follow(userId);
         setIsFollowing(true);
       }
       onUpdate?.();
     } catch (error) {
-      console.error('Error toggling follow:', error);
+      console.error("Error toggling follow:", error);
     } finally {
       setIsLoading(false);
     }
@@ -67,11 +75,11 @@ export default function FollowButton({ userId, currentUserId, onUpdate }: Follow
       disabled={isLoading}
       className={`px-4 py-2 rounded-lg transition-colors ${
         isFollowing
-          ? 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'
-          : 'bg-blue-500 text-white hover:bg-blue-600'
+          ? "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
+          : "bg-blue-500 text-white hover:bg-blue-600"
       } disabled:opacity-50 disabled:cursor-not-allowed`}
     >
-      {isLoading ? '...' : isFollowing ? 'Following' : 'Follow'}
+      {isLoading ? "..." : isFollowing ? "Following" : "Follow"}
     </button>
   );
 }

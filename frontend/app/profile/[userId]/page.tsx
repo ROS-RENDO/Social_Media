@@ -1,67 +1,42 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { useSession } from '@/lib/auth';
-import Link from 'next/link';
-import PostCard from '@/components/PostCard';
-import FollowButton from '@/components/FollowButton';
-import { api } from '@/lib/api';
-
-interface User {
-  id: string;
-  name: string;
-  username?: string;
-  image?: string;
-  bio?: string;
-  followerCount: number;
-  followingCount: number;
-  postCount: number;
-}
-
-interface Post {
-  id: string;
-  content: string;
-  imageUrl?: string;
-  createdAt: string;
-  userId: string;
-  userName: string;
-  username?: string;
-  userImage?: string;
-  likeCount: number;
-  isLiked: number;
-}
+import { useEffect, useState, useCallback } from "react";
+import { useParams } from "next/navigation";
+import { useSession } from "@/lib/auth";
+import Link from "next/link";
+import Image from "next/image";
+import PostCard from "@/components/PostCard";
+import FollowButton from "@/components/FollowButton";
+import { users as usersAPI } from "@/lib/apiClient";
+import type { User, Post } from "@/types/index";
 
 export default function ProfilePage() {
   const params = useParams();
-  const router = useRouter();
   const { data: session } = useSession();
   const userId = params.userId as string;
   const [user, setUser] = useState<User | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const loadProfile = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const userData = await usersAPI.getProfile(userId);
+      setUser(userData.data);
+      // Get user's posts separately if needed
+      setPosts([]);
+    } catch (error) {
+      console.error("Error loading profile:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [userId]);
+
   useEffect(() => {
     if (userId) {
       loadProfile();
     }
-  }, [userId]);
-
-  const loadProfile = async () => {
-    try {
-      setIsLoading(true);
-      const [userData, postsData] = await Promise.all([
-        api.getUser(userId),
-        api.getUserPosts(userId, session?.user?.id),
-      ]);
-      setUser(userData);
-      setPosts(postsData);
-    } catch (error) {
-      console.error('Error loading profile:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [userId, loadProfile]);
 
   if (isLoading) {
     return (
@@ -86,7 +61,13 @@ export default function ProfilePage() {
           <div className="flex items-start space-x-6">
             <div className="w-24 h-24 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center overflow-hidden">
               {user.image ? (
-                <img src={user.image} alt={user.name} className="w-full h-full object-cover" />
+                <Image
+                  src={user.image}
+                  alt={user.name}
+                  width={96}
+                  height={96}
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <span className="text-gray-600 dark:text-gray-300 text-3xl font-semibold">
                   {user.name.charAt(0).toUpperCase()}
@@ -100,7 +81,9 @@ export default function ProfilePage() {
                     {user.name}
                   </h1>
                   {user.username && (
-                    <p className="text-gray-500 dark:text-gray-400">@{user.username}</p>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      @{user.username}
+                    </p>
                   )}
                 </div>
                 {session?.user && (
@@ -112,21 +95,27 @@ export default function ProfilePage() {
                 )}
               </div>
               {user.bio && (
-                <p className="text-gray-700 dark:text-gray-300 mb-4">{user.bio}</p>
+                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                  {user.bio}
+                </p>
               )}
               <div className="flex space-x-6">
                 <div>
                   <span className="font-semibold text-gray-900 dark:text-white">
                     {user.postCount}
                   </span>
-                  <span className="text-gray-500 dark:text-gray-400 ml-1">Posts</span>
+                  <span className="text-gray-500 dark:text-gray-400 ml-1">
+                    Posts
+                  </span>
                 </div>
                 <Link href={`/profile/${userId}/followers`}>
                   <div className="cursor-pointer">
                     <span className="font-semibold text-gray-900 dark:text-white">
                       {user.followerCount}
                     </span>
-                    <span className="text-gray-500 dark:text-gray-400 ml-1">Followers</span>
+                    <span className="text-gray-500 dark:text-gray-400 ml-1">
+                      Followers
+                    </span>
                   </div>
                 </Link>
                 <Link href={`/profile/${userId}/following`}>
@@ -134,7 +123,9 @@ export default function ProfilePage() {
                     <span className="font-semibold text-gray-900 dark:text-white">
                       {user.followingCount}
                     </span>
-                    <span className="text-gray-500 dark:text-gray-400 ml-1">Following</span>
+                    <span className="text-gray-500 dark:text-gray-400 ml-1">
+                      Following
+                    </span>
                   </div>
                 </Link>
               </div>
@@ -143,7 +134,9 @@ export default function ProfilePage() {
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Posts</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            Posts
+          </h2>
           {posts.length === 0 ? (
             <div className="text-center text-gray-600 dark:text-gray-400 py-8">
               No posts yet.

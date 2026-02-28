@@ -1,5 +1,12 @@
 import axios from "axios";
 
+interface UpdateProfileData {
+  name?: string;
+  bio?: string;
+  username?: string;
+  image?: string;
+}
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
 const apiClient = axios.create({
@@ -58,7 +65,8 @@ export const notifications = {
 // Users
 export const users = {
   getProfile: (id: string) => apiClient.get(`/users/${id}`),
-  updateProfile: (data: any) => apiClient.put("/users/profile", data),
+  updateProfile: (data: UpdateProfileData) =>
+    apiClient.put("/users/profile", data),
   searchUsers: (username: string) =>
     apiClient.get(`/users/search?username=${username}`),
 };

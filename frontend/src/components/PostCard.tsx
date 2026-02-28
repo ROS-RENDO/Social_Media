@@ -1,47 +1,42 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { api } from '@/lib/api';
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { likes } from "@/lib/apiClient";
+import type { Post } from "@/types/index";
 
 interface PostCardProps {
-  post: {
-    id: string;
-    content: string;
-    imageUrl?: string;
-    createdAt: string;
-    userId: string;
-    userName: string;
-    username?: string;
-    userImage?: string;
-    likeCount: number;
-    isLiked: number;
-  };
+  post: Post;
   currentUserId?: string;
   onUpdate?: () => void;
 }
 
-export default function PostCard({ post, currentUserId, onUpdate }: PostCardProps) {
-  const [isLiked, setIsLiked] = useState(post.isLiked > 0);
+export default function PostCard({
+  post,
+  currentUserId,
+  onUpdate,
+}: PostCardProps) {
+  const [isLiked, setIsLiked] = useState(!!post.isLiked);
   const [likeCount, setLikeCount] = useState(post.likeCount);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLike = async () => {
     if (!currentUserId) return;
-    
+
     setIsLoading(true);
     try {
       if (isLiked) {
-        await api.unlikePost(post.id, currentUserId);
+        await likes.unlike(post.id);
         setIsLiked(false);
-        setLikeCount(prev => prev - 1);
+        setLikeCount((prev) => prev - 1);
       } else {
-        await api.likePost(post.id, currentUserId);
+        await likes.like(post.id);
         setIsLiked(true);
-        setLikeCount(prev => prev + 1);
+        setLikeCount((prev) => prev + 1);
       }
     } catch (error) {
-      console.error('Error toggling like:', error);
+      console.error("Error toggling like:", error);
     } finally {
       setIsLoading(false);
     }
@@ -59,7 +54,7 @@ export default function PostCard({ post, currentUserId, onUpdate }: PostCardProp
     if (days > 0) return `${days}d ago`;
     if (hours > 0) return `${hours}h ago`;
     if (minutes > 0) return `${minutes}m ago`;
-    return 'Just now';
+    return "Just now";
   };
 
   return (
@@ -68,7 +63,13 @@ export default function PostCard({ post, currentUserId, onUpdate }: PostCardProp
         <Link href={`/profile/${post.userId}`}>
           <div className="w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center overflow-hidden">
             {post.userImage ? (
-              <img src={post.userImage} alt={post.userName} className="w-full h-full object-cover" />
+              <Image
+                src={post.userImage}
+                alt={post.userName}
+                width={48}
+                height={48}
+                className="w-full h-full object-cover"
+              />
             ) : (
               <span className="text-gray-600 dark:text-gray-300 font-semibold">
                 {post.userName.charAt(0).toUpperCase()}
@@ -97,7 +98,13 @@ export default function PostCard({ post, currentUserId, onUpdate }: PostCardProp
           </p>
           {post.imageUrl && (
             <div className="mb-3 rounded-lg overflow-hidden">
-              <img src={post.imageUrl} alt="Post image" className="w-full max-h-96 object-cover" />
+              <Image
+                src={post.imageUrl}
+                alt="Post image"
+                width={600}
+                height={400}
+                className="w-full max-h-96 object-cover"
+              />
             </div>
           )}
           <div className="flex items-center space-x-6">
@@ -106,13 +113,13 @@ export default function PostCard({ post, currentUserId, onUpdate }: PostCardProp
               disabled={!currentUserId || isLoading}
               className={`flex items-center space-x-2 ${
                 isLiked
-                  ? 'text-red-500'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-red-500'
+                  ? "text-red-500"
+                  : "text-gray-500 dark:text-gray-400 hover:text-red-500"
               } transition-colors`}
             >
               <svg
                 className="w-5 h-5"
-                fill={isLiked ? 'currentColor' : 'none'}
+                fill={isLiked ? "currentColor" : "none"}
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >

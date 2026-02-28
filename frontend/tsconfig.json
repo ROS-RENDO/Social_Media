@@ -22,9 +22,13 @@
       "@/*": ["./*"],
       "@/components/*": ["./src/components/*"],
       "@/lib/*": ["./src/lib/*"],
+      "@/hooks": ["./src/hooks/index.ts"],
       "@/hooks/*": ["./src/hooks/*"],
+      "@/types": ["./src/types/index.ts"],
       "@/types/*": ["./src/types/*"],
+      "@/constants": ["./src/constants/index.ts"],
       "@/constants/*": ["./src/constants/*"],
+      "@/utils": ["./src/utils/index.ts"],
       "@/utils/*": ["./src/utils/*"]
     }
   },

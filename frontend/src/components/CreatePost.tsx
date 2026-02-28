@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { api } from '@/lib/api';
+import { useState } from "react";
+import { posts as postsAPI } from "@/lib/apiClient";
 
 interface CreatePostProps {
   userId: string;
@@ -9,8 +9,8 @@ interface CreatePostProps {
 }
 
 export default function CreatePost({ userId, onPostCreated }: CreatePostProps) {
-  const [content, setContent] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+  const [content, setContent] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,17 +19,13 @@ export default function CreatePost({ userId, onPostCreated }: CreatePostProps) {
 
     setIsLoading(true);
     try {
-      await api.createPost({
-        userId,
-        content: content.trim(),
-        imageUrl: imageUrl.trim() || undefined,
-      });
-      setContent('');
-      setImageUrl('');
+      await postsAPI.createPost(content.trim(), imageUrl.trim() || undefined);
+      setContent("");
+      setImageUrl("");
       onPostCreated?.();
     } catch (error) {
-      console.error('Error creating post:', error);
-      alert('Failed to create post');
+      console.error("Error creating post:", error);
+      alert("Failed to create post");
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +56,7 @@ export default function CreatePost({ userId, onPostCreated }: CreatePostProps) {
             disabled={!content.trim() || isLoading}
             className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {isLoading ? 'Posting...' : 'Post'}
+            {isLoading ? "Posting..." : "Post"}
           </button>
         </div>
       </form>
